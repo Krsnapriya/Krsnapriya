@@ -2,98 +2,125 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Zone Severity Statistics</title>
+  <title>Telangana Zone Reporter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
+      background: #cfe8ff; /* Light blue */
       padding: 20px;
-      background: #f2f4f8;
-      color: #333;
-    }
-    h1 {
-      color: #2e86de;
+      margin: 0;
     }
     input, button {
       padding: 10px;
-      margin: 5px;
       font-size: 1rem;
+      margin: 5px;
+      border-radius: 8px;
+      border: none;
     }
-    #stats {
-      margin-top: 20px;
+    #map { height: 300px; margin-top: 20px; border-radius: 12px; }
+    .info-box {
       background: #fff;
-      padding: 20px;
+      padding: 15px;
       border-radius: 10px;
+      margin-top: 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    .zone {
-      margin: 5px 0;
+    h2 {
+      color: #0b5394;
     }
   </style>
 </head>
 <body>
 
-<h1>📊 Crowd-Based Zone Severity Tracker</h1>
+<h2>📍 Telangana Zone Reporter + Apollo Distance Prediction</h2>
 
-<label for="severityInput">Enter Severity Score (0–100): </label>
+<label for="severityInput">Enter Severity Score (0–100):</label>
 <input type="number" id="severityInput" min="0" max="100">
-<button onclick="addSeverity()">Submit</button>
+<button onclick="submitReport()">Submit Report</button>
 
-<div id="stats" style="display:none;">
-  <h2>Live Statistics</h2>
-  <p>Total Reports: <span id="totalReports"></span></p>
-  <p>Average Severity: <span id="averageSeverity"></span></p>
-  <div class="zone">Green Zone (0–30): <span id="greenCount"></span></div>
-  <div class="zone">Orange Zone (31–70): <span id="orangeCount"></span></div>
-  <div class="zone">Red Zone (71–100): <span id="redCount"></span></div>
-  <p>Most Common Zone Type: <span id="commonZone"></span></p>
-</div>
+<div id="map"></div>
+
+<div id="output" class="info-box" style="display:none;"></div>
 
 <script>
-  let severityScores = [];
+  const apolloLat = 17.4182;
+  const apolloLng = 78.4481;
+  const map = L.map('map').setView([17.385, 78.4867], 7.5); // Telangana view
 
-  function addSeverity() {
-    const input = document.getElementById("severityInput");
-    const value = parseInt(input.value);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
 
-    if (isNaN(value) || value < 0 || value > 100) {
-      alert("Please enter a valid score between 0 and 100.");
+  function submitReport() {
+    const severity = parseInt(document.getElementById('severityInput').value);
+    if (isNaN(severity) || severity < 0 || severity > 100) {
+      alert("Enter a valid severity between 0 and 100.");
       return;
     }
 
-    severityScores.push(value);
-    input.value = '';
-    updateStats();
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        // Restrict to Telangana region only
+        if (lat < 15.8 || lat > 19.5 || lng < 77.0 || lng > 80.0) {
+          alert("You're outside Telangana. This tool is Telangana-specific.");
+          return;
+        }
+
+        const zone = getZone(severity);
+        const distance = getDistance(lat, lng, apolloLat, apolloLng).toFixed(2);
+
+        L.circleMarker([lat, lng], {
+          color: zoneColor(zone),
+          fillColor: zoneColor(zone),
+          fillOpacity: 0.9,
+          radius: 10
+        }).addTo(map).bindPopup(`<strong>${zone} Zone</strong><br>Severity: ${severity}<br>📍 Distance to Apollo: ${distance} km`).openPopup();
+
+        map.setView([lat, lng], 11);
+
+        document.getElementById('output').style.display = 'block';
+        document.getElementById('output').innerHTML = `
+          <h3>✅ Report Submitted</h3>
+          <p><strong>Zone Type:</strong> ${zone}</p>
+          <p><strong>Distance to Apollo Jubilee Hills:</strong> ${distance} km</p>
+          <p><strong>Your Coordinates:</strong> ${lat.toFixed(4)}, ${lng.toFixed(4)}</p>
+        `;
+      },
+      () => alert("Location permission denied.")
+    );
   }
 
-  function categorize(score) {
+  function getZone(score) {
     if (score <= 30) return 'Green';
     if (score <= 70) return 'Orange';
     return 'Red';
   }
 
-  function updateStats() {
-    if (severityScores.length === 0) return;
+  function zoneColor(zone) {
+    if (zone === 'Green') return '#2ecc71';
+    if (zone === 'Orange') return '#f39c12';
+    return '#e74c3c';
+  }
 
-    document.getElementById("stats").style.display = "block";
-
-    const total = severityScores.length;
-    const sum = severityScores.reduce((a, b) => a + b, 0);
-    const avg = (sum / total).toFixed(2);
-
-    const zoneCounts = { Green: 0, Orange: 0, Red: 0 };
-    severityScores.forEach(score => {
-      const zone = categorize(score);
-      zoneCounts[zone]++;
-    });
-
-    const mostCommonZone = Object.entries(zoneCounts).reduce((a, b) => a[1] > b[1] ? a : b);
-
-    document.getElementById("totalReports").textContent = total;
-    document.getElementById("averageSeverity").textContent = avg;
-    document.getElementById("greenCount").textContent = zoneCounts.Green;
-    document.getElementById("orangeCount").textContent = zoneCounts.Orange;
-    document.getElementById("redCount").textContent = zoneCounts.Red;
-    document.getElementById("commonZone").textContent = `${mostCommonZone[0]} Zone (${mostCommonZone[1]} reports)`;
+  // Haversine formula
+  function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
   }
 </script>
 
