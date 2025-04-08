@@ -1,0 +1,24 @@
+<textarea id="journeyDetails" placeholder="Describe your trip..."></textarea>
+<select id="theme">
+  <option value="peaceful">Peaceful</option>
+  <option value="adventurous">Adventurous</option>
+  <option value="reflective">Reflective</option>
+</select>
+<button onclick="generatePoem()">Create Poem</button>
+
+<pre id="poemOutput"></pre>
+
+<script>
+function generatePoem() {
+  const theme = document.getElementById('theme').value;
+  const journey = document.getElementById('journeyDetails').value;
+
+  const poemTemplates = {
+    peaceful: `In calm winds and silent air,\nYour journey whispered everywhere.\n${journey}\nA peaceful trace, so soft, so rare.`,
+    adventurous: `With each footstep, a tale began,\nAcross wild lands and ocean span.\n${journey}\nThe spirit danced, as only it can.`,
+    reflective: `Moments paused in time's embrace,\nMemories etched with gentle grace.\n${journey}\nA mirror held in nature's face.`
+  };
+
+  document.getElementById('poemOutput').textContent = poemTemplates[theme];
+}
+</script>
