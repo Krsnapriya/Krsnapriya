@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zone Severity Statistics</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      background: #f2f4f8;
+      color: #333;
+    }
+    h1 {
+      color: #2e86de;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 1rem;
+    }
+    #stats {
+      margin-top: 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .zone {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📊 Crowd-Based Zone Severity Tracker</h1>
+
+<label for="severityInput">Enter Severity Score (0–100): </label>
+<input type="number" id="severityInput" min="0" max="100">
+<button onclick="addSeverity()">Submit</button>
+
+<div id="stats" style="display:none;">
+  <h2>Live Statistics</h2>
+  <p>Total Reports: <span id="totalReports"></span></p>
+  <p>Average Severity: <span id="averageSeverity"></span></p>
+  <div class="zone">Green Zone (0–30): <span id="greenCount"></span></div>
+  <div class="zone">Orange Zone (31–70): <span id="orangeCount"></span></div>
+  <div class="zone">Red Zone (71–100): <span id="redCount"></span></div>
+  <p>Most Common Zone Type: <span id="commonZone"></span></p>
+</div>
+
+<script>
+  let severityScores = [];
+
+  function addSeverity() {
+    const input = document.getElementById("severityInput");
+    const value = parseInt(input.value);
+
+    if (isNaN(value) || value < 0 || value > 100) {
+      alert("Please enter a valid score between 0 and 100.");
+      return;
+    }
+
+    severityScores.push(value);
+    input.value = '';
+    updateStats();
+  }
+
+  function categorize(score) {
+    if (score <= 30) return 'Green';
+    if (score <= 70) return 'Orange';
+    return 'Red';
+  }
+
+  function updateStats() {
+    if (severityScores.length === 0) return;
+
+    document.getElementById("stats").style.display = "block";
+
+    const total = severityScores.length;
+    const sum = severityScores.reduce((a, b) => a + b, 0);
+    const avg = (sum / total).toFixed(2);
+
+    const zoneCounts = { Green: 0, Orange: 0, Red: 0 };
+    severityScores.forEach(score => {
+      const zone = categorize(score);
+      zoneCounts[zone]++;
+    });
+
+    const mostCommonZone = Object.entries(zoneCounts).reduce((a, b) => a[1] > b[1] ? a : b);
+
+    document.getElementById("totalReports").textContent = total;
+    document.getElementById("averageSeverity").textContent = avg;
+    document.getElementById("greenCount").textContent = zoneCounts.Green;
+    document.getElementById("orangeCount").textContent = zoneCounts.Orange;
+    document.getElementById("redCount").textContent = zoneCounts.Red;
+    document.getElementById("commonZone").textContent = `${mostCommonZone[0]} Zone (${mostCommonZone[1]} reports)`;
+  }
+</script>
+
+</body>
+</html>
