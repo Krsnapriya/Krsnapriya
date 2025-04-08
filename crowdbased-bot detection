@@ -1,0 +1,20 @@
+<button onclick="getOutbreakNews()">Get Latest Outbreak News</button>
+<ul id="newsList"></ul>
+
+<script>
+function getOutbreakNews() {
+  // Simulated news entries
+  const news = [
+    "Dengue outbreak in Zone 5",
+    "Flu cases rise in East region",
+    "COVID-19 cluster in downtown hospital"
+  ];
+  const list = document.getElementById('newsList');
+  list.innerHTML = '';
+  news.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    list.appendChild(li);
+  });
+}
+</script>
