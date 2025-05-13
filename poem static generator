@@ -1,24 +1,97 @@
-<textarea id="journeyDetails" placeholder="Describe your trip..."></textarea>
-<select id="theme">
-  <option value="peaceful">Peaceful</option>
-  <option value="adventurous">Adventurous</option>
-  <option value="reflective">Reflective</option>
-</select>
-<button onclick="generatePoem()">Create Poem</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journey Poem Generator</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+      animation: pulseBG 15s ease infinite;
+      color: #fff;
+    }
 
-<pre id="poemOutput"></pre>
+    @keyframes pulseBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-<script>
-function generatePoem() {
-  const theme = document.getElementById('theme').value;
-  const journey = document.getElementById('journeyDetails').value;
+    .container {
+      background: rgba(90, 60, 110, 0.7);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+    }
 
-  const poemTemplates = {
-    peaceful: `In calm winds and silent air,\nYour journey whispered everywhere.\n${journey}\nA peaceful trace, so soft, so rare.`,
-    adventurous: `With each footstep, a tale began,\nAcross wild lands and ocean span.\n${journey}\nThe spirit danced, as only it can.`,
-    reflective: `Moments paused in time's embrace,\nMemories etched with gentle grace.\n${journey}\nA mirror held in nature's face.`
-  };
+    textarea, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
 
-  document.getElementById('poemOutput').textContent = poemTemplates[theme];
-}
-</script>
+    button {
+      background-color: #a259ff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #8438ca;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✨ Journey Poem Generator ✨</h2>
+    <textarea id="journeyDetails" placeholder="Describe your trip..."></textarea>
+    <select id="theme">
+      <option value="peaceful">Peaceful</option>
+      <option value="adventurous">Adventurous</option>
+      <option value="reflective">Reflective</option>
+    </select>
+    <button onclick="generatePoem()">Create Poem</button>
+    <pre id="poemOutput"></pre>
+  </div>
+
+  <script>
+    function generatePoem() {
+      const theme = document.getElementById('theme').value;
+      const journey = document.getElementById('journeyDetails').value;
+
+      const poemTemplates = {
+        peaceful: `In violet hush and lilac skies,\nA tranquil breeze where silence lies.\n${journey}\nYour soul unwinds, where stillness flies.`,
+
+        adventurous: `Through amethyst peaks and indigo seas,\nYou chased the wind with untamed ease.\n${journey}\nA dance of stars and daring decrees.`,
+
+        reflective: `Lavender thoughts drift in the night,\nMemories wrapped in twilight light.\n${journey}\nA soft refrain of past insight.`
+      };
+
+      document.getElementById('poemOutput').textContent = poemTemplates[theme];
+    }
+  </script>
+</body>
+</html>
