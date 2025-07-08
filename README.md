@@ -1,7 +1,7 @@
 - 👋 Hi, I’m @Krsnapriya
 - 👀 I’m interested in coding interactive art, AI-driven projects, and open-source tools for applications.
 - 🌱 I’m currently learning Python for generative design and diving into machine learning basics.
-- 💞️ I’m looking to collaborate on projects that blend tech with creativity—like building something which is to be created such as compiler!
-- 📫 How to reach me: Drop me a message here or find me vibing on X @quantumplatores.
+- I’m looking to collaborate on projects that blend tech with creativity—like building something which is to be created such as compiler!
+- How to reach me: Drop me a message here or find me vibing on X @quantumplatores.
 - 😄 Pronouns: She/her
 - ⚡ Fun fact: I once wrote a haiku generator that only outputs poems about coffee and cats.
